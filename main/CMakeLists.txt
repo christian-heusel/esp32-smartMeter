@@ -16,4 +16,5 @@
 
 
 idf_component_register(SRCS "esp32-stromzaehler.cpp"
-                    INCLUDE_DIRS ".")
+                    INCLUDE_DIRS "."
+                    REQUIRES wifi)
