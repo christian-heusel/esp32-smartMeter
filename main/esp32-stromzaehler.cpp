@@ -16,7 +16,7 @@
 
 #include <stdio.h>
 
-void app_main(void)
+extern "C" void app_main()
 {
-
+    printf("Hello from C++\n");
 }

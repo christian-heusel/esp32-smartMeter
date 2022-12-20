@@ -15,5 +15,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-idf_component_register(SRCS "esp32-stromzaehler.c"
+idf_component_register(SRCS "esp32-stromzaehler.cpp"
                     INCLUDE_DIRS ".")
