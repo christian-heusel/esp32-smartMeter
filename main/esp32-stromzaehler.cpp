@@ -36,5 +36,10 @@ extern "C" void app_main()
     ESP_LOGI(WIFI_LOG_TAG, "ESP_WIFI_MODE_STA");
     wifi_init_station_mode();
 
-    mqtt_app_start();
+    esp_mqtt_client_handle_t mqtt_client = mqtt_app_start();
+    int msg_id = esp_mqtt_client_publish(mqtt_client, "/topic/some_test_topic", "abcde", 0, 1, 0);
+    ESP_LOGI(MQTT_LOG_TAG, "sent publish successful, msg_id=%d", msg_id);
+
+    // Cleanup the mqtt client
+    ESP_ERROR_CHECK(esp_mqtt_client_destroy(mqtt_client));
 }

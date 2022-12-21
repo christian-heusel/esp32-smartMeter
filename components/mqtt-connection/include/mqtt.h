@@ -5,9 +5,11 @@
 extern "C" {
 #endif
 
+#include "mqtt_client.h"
+
 const char* const MQTT_LOG_TAG = "MQTT";
 
-void mqtt_app_start(void);
+esp_mqtt_client_handle_t mqtt_app_start();
 
 #ifdef __cplusplus
 }
