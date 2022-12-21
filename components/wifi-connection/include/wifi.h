@@ -7,7 +7,7 @@ extern "C" {
 
 #include "esp_event.h"
 
-const char* const TAG = "wifi station";
+const char* const WIFI_LOG_TAG = "wifi station";
 
 void event_handler(void* arg, esp_event_base_t event_base,
                    int32_t event_id, void* event_data);
