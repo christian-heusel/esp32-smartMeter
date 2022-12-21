@@ -21,6 +21,7 @@
 #include "esp_log.h"
 
 #include "wifi.h"
+#include "uart-communication.hh"
 
 extern "C" void app_main()
 {
@@ -34,4 +35,7 @@ extern "C" void app_main()
 
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
     wifi_init_station_mode();
+
+    auto uart_interface = UARTInterface{};
+    uart_interface.read_inf();
 }
