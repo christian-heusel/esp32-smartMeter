@@ -3,6 +3,8 @@
 
 #include "driver/uart.h"
 
+const char* const UART_COMMUNICATION_TAG = "uart comm";
+
 class UARTInterface {
 public:
     UARTInterface();
