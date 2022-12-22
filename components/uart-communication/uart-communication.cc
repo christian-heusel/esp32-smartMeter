@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <cstring>
 
 #include "esp_err.h"
 #include "esp_log.h"
@@ -43,7 +44,7 @@ UARTInterface::~UARTInterface() {
     ESP_ERROR_CHECK(uart_driver_delete(UART_COMMUNICATION_PORT_NUM));
 }
 
-void UARTInterface::read_inf() {
+void UARTInterface::testEndlessLoop() {
     // Configure a temporary buffer for the incoming data
     // uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
     auto data = std::make_unique<uint8_t[]>(BUF_SIZE);
@@ -58,6 +59,11 @@ void UARTInterface::read_inf() {
         int len = uart_read_bytes(UART_COMMUNICATION_PORT_NUM, data.get(), (BUF_SIZE - 1), 20 / portTICK_PERIOD_MS);
 
         ESP_LOGI(UART_COMMUNICATION_TAG, "Recv str: %s", (char *) data.get());
+
+        // zero out the buffer
+        if (len > 0) {
+            memset (data.get(), uint8_t{}, BUF_SIZE);
+        }
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }

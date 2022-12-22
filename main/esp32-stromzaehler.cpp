@@ -37,5 +37,5 @@ extern "C" void app_main()
     wifi_init_station_mode();
 
     auto uart_interface = UARTInterface{};
-    uart_interface.read_inf();
+    uart_interface.testEndlessLoop();
 }

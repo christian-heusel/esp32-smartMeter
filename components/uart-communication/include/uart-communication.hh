@@ -10,7 +10,7 @@ public:
     UARTInterface();
     ~UARTInterface();
 
-    void read_inf();
+    void testEndlessLoop();
 
 private:
     QueueHandle_t uart_queue;
