@@ -1,4 +1,4 @@
-# esp32-stromzaehler
+# esp32-smarMeter
 
 Datasheet: https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32d_esp32-wroom-32u_datasheet_en.pdf
 
