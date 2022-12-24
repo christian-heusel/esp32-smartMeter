@@ -3,6 +3,8 @@
 
 #include "driver/uart.h"
 
+#include <vector>
+
 const char* const UART_COMMUNICATION_TAG = "uart comm";
 
 class UARTInterface {
@@ -14,6 +16,7 @@ public:
 
 private:
     QueueHandle_t uart_queue;
+    std::vector<uint8_t> read_buf;
 };
 
 #endif /* ifndef UART_COMMUNICATION_HH */
