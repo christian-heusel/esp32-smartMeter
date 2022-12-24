@@ -1,0 +1,4 @@
+target remote :1234
+monitor system_reset
+tb app_main
+c
