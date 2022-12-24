@@ -13,6 +13,7 @@ public:
     ~UARTInterface();
 
     void testEndlessLoop();
+    static void uart_event_task(void *pvParameters);
 
 private:
     QueueHandle_t uart_queue;

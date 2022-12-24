@@ -52,17 +52,101 @@ void UARTInterface::testEndlessLoop() {
         // Write data to the UART
         uart_write_bytes(UART_COMMUNICATION_PORT_NUM, teststring.data(), teststring.size());
 
-        // Read data from the UART
-        int len = uart_read_bytes(UART_COMMUNICATION_PORT_NUM, read_buf.data(), (READ_BUF_SIZE - 1), 20 / portTICK_PERIOD_MS);
+        // // Read data from the UART
+        // int len = uart_read_bytes(UART_COMMUNICATION_PORT_NUM, read_buf.data(), (READ_BUF_SIZE - 1), 20 / portTICK_PERIOD_MS);
 
-        ESP_LOGI(UART_COMMUNICATION_TAG, "Recv str: %s", (char *) read_buf.data());
+        // ESP_LOGI(UART_COMMUNICATION_TAG, "Recv str: %s", (char *) read_buf.data());
 
-        // zero out the buffer
-        if (len > 0) {
-            memset (read_buf.data(), uint8_t{}, READ_BUF_SIZE);
-        }
+        // // zero out the buffer
+        // if (len > 0) {
+        //     memset (read_buf.data(), uint8_t{}, READ_BUF_SIZE);
+        // }
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
+}
 
+void UARTInterface::uart_event_task(void* pvParameters) {
+    UARTInterface* uart_interface_ptr = static_cast<UARTInterface*>(pvParameters);
+    uart_event_t event;
+    size_t buffered_size;
+
+    ESP_LOGI(UART_COMMUNICATION_TAG, "uart interface ptr: %p", uart_interface_ptr);
+    ESP_LOGI(UART_COMMUNICATION_TAG, "uart interface readbuf size %d", uart_interface_ptr->read_buf.size());
+
+    for(;;) {
+        // Waiting for UART event.
+        if(xQueueReceive(uart_interface_ptr->uart_queue, (void * )&event, (TickType_t)portMAX_DELAY)) {
+            bzero(uart_interface_ptr->read_buf.data(), READ_BUF_SIZE);
+            ESP_LOGI(UART_COMMUNICATION_TAG, "uart[%d] event:", UART_COMMUNICATION_PORT_NUM);
+            switch(event.type) {
+                // Event of UART receving data
+                /* We'd better handler data event fast, there would be much more data events than
+                   other types of events. If we take too much time on data event, the queue might
+                   be full. */
+                case UART_DATA:
+                {
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
+                    uart_read_bytes(UART_COMMUNICATION_PORT_NUM, uart_interface_ptr->read_buf.data(), event.size, portMAX_DELAY);
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]:");
+                    uart_write_bytes(UART_COMMUNICATION_PORT_NUM, (const char*) uart_interface_ptr->read_buf.data(), event.size);
+                    break;
+                }
+                // Event of HW FIFO overflow detected
+                case UART_FIFO_OVF:
+                {
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "hw fifo overflow");
+                    // If fifo overflow happened, you should consider adding flow control for your application.
+                    // The ISR has already reset the rx FIFO,
+                    // As an example, we directly flush the rx buffer here in order to read more data.
+                    uart_flush_input(UART_COMMUNICATION_PORT_NUM);
+                    xQueueReset(uart_interface_ptr->uart_queue);
+                    break;
+                }
+                // Event of UART ring buffer full
+                case UART_BUFFER_FULL:
+                {
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "ring buffer full");
+                    // If buffer full happened, you should consider increasing your buffer size
+                    // As an example, we directly flush the rx buffer here in order to read more data.
+                    uart_flush_input(UART_COMMUNICATION_PORT_NUM);
+                    xQueueReset(uart_interface_ptr->uart_queue);
+                    break;
+                }
+                // Event of UART RX break detected
+                case UART_BREAK:
+                {
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "uart rx break");
+                    break;
+                }
+                // Event of UART parity check error
+                case UART_PARITY_ERR:
+                {
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "uart parity error");
+                    break;
+                }
+                // Event of UART frame error
+                case UART_FRAME_ERR:
+                {
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "uart frame error");
+                    break;
+                }
+                // UART_PATTERN_DET
+                case UART_PATTERN_DET:
+                {
+                    uart_get_buffered_data_len(UART_COMMUNICATION_PORT_NUM, &buffered_size);
+                    int pos = uart_pattern_pop_pos(UART_COMMUNICATION_PORT_NUM);
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "[UART PATTERN DETECTED] pos: %d, buffered size: %d", pos, buffered_size);
+                    break;
+                }
+                // Others
+                default:
+                {
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "uart event type: %d", event.type);
+                    break;
+                }
+            }
+        }
+    }
+    vTaskDelete(NULL);
 }
