@@ -30,11 +30,12 @@ UARTInterface::UARTInterface() {
         .parity    = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+        .rx_flow_ctrl_thresh = 0,
         .source_clk = UART_SCLK_DEFAULT,
     };
     int intr_alloc_flags = 0;
 
-    ESP_ERROR_CHECK(uart_driver_install(UART_COMMUNICATION_PORT_NUM, READ_BUF_SIZE * 2, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_driver_install(UART_COMMUNICATION_PORT_NUM, READ_BUF_SIZE * 2, 0, 10, &uart_queue, intr_alloc_flags));
     ESP_ERROR_CHECK(uart_param_config(UART_COMMUNICATION_PORT_NUM, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(UART_COMMUNICATION_PORT_NUM, UART_COMMUNICATION_TXD, UART_COMMUNICATION_RXD, UART_COMMUNICATION_RTS, UART_COMMUNICATION_CTS));
 
@@ -50,6 +51,8 @@ void UARTInterface::testEndlessLoop() {
 
     for (;;) {
         // Write data to the UART
+
+        //ESP_LOGI(UART_COMMUNICATION_TAG, "Send str: %s", (char *) teststring.data());
         uart_write_bytes(UART_COMMUNICATION_PORT_NUM, teststring.data(), teststring.size());
 
         // // Read data from the UART
@@ -88,8 +91,7 @@ void UARTInterface::uart_event_task(void* pvParameters) {
                 {
                     ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
                     uart_read_bytes(UART_COMMUNICATION_PORT_NUM, uart_interface_ptr->read_buf.data(), event.size, portMAX_DELAY);
-                    ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]:");
-                    uart_write_bytes(UART_COMMUNICATION_PORT_NUM, (const char*) uart_interface_ptr->read_buf.data(), event.size);
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
                     break;
                 }
                 // Event of HW FIFO overflow detected
