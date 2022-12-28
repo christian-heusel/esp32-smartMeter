@@ -1,4 +1,4 @@
-// ESP32-Stromzaehler
+// ESP32-SmartMeter
 // Copyright (C) 2022 Christian Heusel
 //
 // This program is free software: you can redistribute it and/or modify

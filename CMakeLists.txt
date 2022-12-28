@@ -1,4 +1,4 @@
-# ESP32-Stromzaehler
+# ESP32-SmartMeter
 # Copyright (C) 2022 Christian Heusel
 #
 # This program is free software: you can redistribute it and/or modify
@@ -22,4 +22,4 @@
 cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(esp32-stromzaehler)
+project(esp32-smartMeter)
