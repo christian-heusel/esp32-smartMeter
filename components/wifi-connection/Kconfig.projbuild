@@ -6,7 +6,7 @@ menu "Wifi Configuration"
 
     config ESP_WIFI_SSID
         string "WiFi SSID"
-        default "myssid"
+        default "JoeWlan"
         help
             SSID (network name) for the example to connect to.
 

@@ -16,5 +16,5 @@
 
 
 idf_component_register(SRCS "esp32-stromzaehler.cpp"
-                    INCLUDE_DIRS "."
-                    REQUIRES wifi uart-communication)
+                       INCLUDE_DIRS "."
+                       REQUIRES wifi-connection mqtt-connection uart-communication)

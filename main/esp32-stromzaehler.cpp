@@ -23,10 +23,11 @@
 
 #include "wifi.h"
 #include "uart-communication.hh"
+#include "mqtt.hh"
 
 extern "C" void app_main()
 {
-    //Initialize NVS
+    // Initialize NVS
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
       ESP_ERROR_CHECK(nvs_flash_erase());
@@ -34,8 +35,11 @@ extern "C" void app_main()
     }
     ESP_ERROR_CHECK(ret);
 
-    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
+    ESP_LOGI(WIFI_LOG_TAG, "ESP_WIFI_MODE_STA");
     wifi_init_station_mode();
+
+    auto mqtt_client = MQTTClient{};
+    mqtt_client.publish("/topic/some_test_topic", "abcde");
 
     auto uart_interface = std::make_unique<UARTInterface>();
 
