@@ -15,12 +15,14 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <stdio.h>
+#include <memory>
 
 #include "nvs_flash.h"
 #include "esp_err.h"
 #include "esp_log.h"
 
 #include "wifi.h"
+#include "uart-communication.hh"
 
 extern "C" void app_main()
 {
@@ -34,4 +36,13 @@ extern "C" void app_main()
 
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
     wifi_init_station_mode();
+
+    auto uart_interface = std::make_unique<UARTInterface>();
+
+    // Create a task to handler UART event from ISR
+    // The UART interface has to be allocated dynamically as the tasks cannot reference stack vars
+    // see https://www.freertos.org/a00125.html at "pvParameters"
+    xTaskCreate(UARTInterface::uart_event_task, "uart_event_task", 2048, uart_interface.get(), 12, NULL);
+
+    uart_interface->testEndlessLoop();
 }
