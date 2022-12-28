@@ -12,7 +12,12 @@ public:
     UARTInterface();
     ~UARTInterface();
 
+    // this driver can currently not be copied
+    UARTInterface(const UARTInterface& other) = delete;
+    UARTInterface& operator=(const UARTInterface& other) = delete;
+
     void testEndlessLoop();
+
     static void uart_event_task(void *pvParameters);
 
 private:

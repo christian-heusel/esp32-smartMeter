@@ -51,19 +51,8 @@ void UARTInterface::testEndlessLoop() {
 
     for (;;) {
         // Write data to the UART
-
-        //ESP_LOGI(UART_COMMUNICATION_TAG, "Send str: %s", (char *) teststring.data());
+        ESP_LOGI(UART_COMMUNICATION_TAG, "Send str (testEndlessLoop): %s", (char *) teststring.data());
         uart_write_bytes(UART_COMMUNICATION_PORT_NUM, teststring.data(), teststring.size());
-
-        // // Read data from the UART
-        // int len = uart_read_bytes(UART_COMMUNICATION_PORT_NUM, read_buf.data(), (READ_BUF_SIZE - 1), 20 / portTICK_PERIOD_MS);
-
-        // ESP_LOGI(UART_COMMUNICATION_TAG, "Recv str: %s", (char *) read_buf.data());
-
-        // // zero out the buffer
-        // if (len > 0) {
-        //     memset (read_buf.data(), uint8_t{}, READ_BUF_SIZE);
-        // }
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
@@ -150,5 +139,7 @@ void UARTInterface::uart_event_task(void* pvParameters) {
             }
         }
     }
+
+    // this removes the task from the RTOS queues and is usually not reached
     vTaskDelete(NULL);
 }

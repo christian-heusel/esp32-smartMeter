@@ -6,6 +6,9 @@
 
 ## with `qemu`
 
+There is a fork of Qemu which supports ESP32 hardware: https://github.com/espressif/qemu
+It can be installed via the AUR on Archlinux for example: https://aur.archlinux.org/packages/qemu-esp-xtensa-git
+
 ```
 $ idf.py build
 $ (cd build; esptool.py --chip esp32 merge_bin --fill-flash-size 4MB -o flash_image.bin @flash_args)
