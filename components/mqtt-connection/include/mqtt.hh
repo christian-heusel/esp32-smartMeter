@@ -5,15 +5,15 @@
 
 #include "mqtt_client.h"
 
-class mqttClient {
+class MQTTClient {
 public:
-    mqttClient();
-    ~mqttClient();
+    MQTTClient();
+    ~MQTTClient();
 
     // it currently makes no sense to copy or assign as the handle gets invalid on destruction
     // for this to work the handle would have to be lifetime extended
-    mqttClient(const mqttClient& other) = delete;
-    mqttClient& operator=(const mqttClient& other) = delete;
+    MQTTClient(const MQTTClient& other) = delete;
+    MQTTClient& operator=(const MQTTClient& other) = delete;
 
     int publish(std::string_view topic, std::string_view message);
 

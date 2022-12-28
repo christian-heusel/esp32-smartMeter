@@ -36,6 +36,6 @@ extern "C" void app_main()
     ESP_LOGI(WIFI_LOG_TAG, "ESP_WIFI_MODE_STA");
     wifi_init_station_mode();
 
-    auto mqtt_client = mqttClient{};
+    auto mqtt_client = MQTTClient{};
     mqtt_client.publish("/topic/some_test_topic", "abcde");
 }
