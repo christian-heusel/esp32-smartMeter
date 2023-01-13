@@ -15,7 +15,7 @@ menu "UART Configuration"
     config UART_BAUD_RATE
         int "UART communication speed"
         range 1200 115200
-        default 115200
+        default 9600
         help
             UART communication speed.
 
