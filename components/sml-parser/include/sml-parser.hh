@@ -2,6 +2,7 @@
 #define SML_PARSER_HH
 
 #include "sml.h"
+#include "mqtt.hh"
 #include <cstddef>
 
 const char* const SML_PARSER_LOG_TAG = "SML";
@@ -10,10 +11,15 @@ class SMLParser {
 
 public:
 
+    SMLParser(MQTTClient* mqttClient);
+
     void readByte(unsigned char inputChar);
     void readBuffer(const unsigned char* input, size_t size);
+    void printSMLValues();
+    void sendSMLValues();
 
 private:
+    MQTTClient* mqttClient;
     sml_states_t currentState;
     unsigned long counter = 0;
     char buffer[50];

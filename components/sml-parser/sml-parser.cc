@@ -1,13 +1,17 @@
 #include "sml-parser.hh"
 
 #include "esp_log.h"
+#include <stdio.h>
 
-
-#define MAX_STR_MANUF 5
-unsigned char manuf[MAX_STR_MANUF];
+unsigned char manuf[5];
 double T1Wh = -2, SumWh = -2;
 
-void SMLParser::Manufacturer() { smlOBISManufacturer(manuf, MAX_STR_MANUF); }
+SMLParser::SMLParser(MQTTClient* mqttClient)
+:
+    mqttClient(mqttClient)
+{};
+
+void SMLParser::Manufacturer() { smlOBISManufacturer(manuf, 5); }
 
 void SMLParser::PowerT1() { smlOBISWh(T1Wh); }
 
@@ -17,6 +21,31 @@ void SMLParser::readBuffer(const unsigned char* input, size_t size) {
     for (int i = 0; i < size; ++i) {
         readByte(input[i]);
     }
+}
+
+void SMLParser::printSMLValues()
+{
+    sprintf(buffer, "Msg..: %lu", counter);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "Message: %s", buffer);
+    sprintf(buffer, "Manuf: %s", manuf);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "Manufacturer: %s", buffer);
+
+    // dtostrf(T1Wh, 10, 1, floatBuffer);
+    sprintf(buffer, "T1.: %f", T1Wh);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "T1.: %s", buffer);
+
+    // dtostrf(SumWh, 10, 1, floatBuffer);
+    sprintf(buffer, "Sum: %f", SumWh);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "Sum.: %s", buffer);
+}
+
+void SMLParser::sendSMLValues()
+{
+    auto size = sprintf(buffer, "%f", T1Wh);
+    mqttClient->publish("t1", std::string_view(buffer, size));
+
+    sprintf(buffer, "%f", SumWh);
+    mqttClient->publish("sum", std::string_view(buffer, size));
 }
 
 void SMLParser::readByte(unsigned char inputChar)
@@ -45,5 +74,7 @@ void SMLParser::readByte(unsigned char inputChar)
   if (currentState == SML_FINAL) {
     counter++;
     ESP_LOGI(SML_PARSER_LOG_TAG, "Successfully received a complete message");
+    printSMLValues();
+    sendSMLValues();
   }
 }
