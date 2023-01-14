@@ -2,6 +2,7 @@
 #define UART_COMMUNICATION_HH
 
 #include "driver/uart.h"
+#include "sml-parser.hh"
 
 #include <vector>
 
@@ -23,6 +24,11 @@ public:
 private:
     QueueHandle_t uart_queue;
     std::vector<uint8_t> read_buf;
+};
+
+struct UARTEventTaskInput {
+    UARTInterface* uart_ptr;
+    SMLParser* sml_ptr;
 };
 
 #endif /* ifndef UART_COMMUNICATION_HH */

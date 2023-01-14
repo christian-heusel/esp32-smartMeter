@@ -59,7 +59,8 @@ void UARTInterface::testEndlessLoop() {
 }
 
 void UARTInterface::uart_event_task(void* pvParameters) {
-    UARTInterface* uart_interface_ptr = static_cast<UARTInterface*>(pvParameters);
+    auto task_input = static_cast<UARTEventTaskInput*>(pvParameters);
+    UARTInterface* uart_interface_ptr = task_input->uart_ptr;
     uart_event_t event;
     size_t buffered_size;
 
@@ -80,7 +81,8 @@ void UARTInterface::uart_event_task(void* pvParameters) {
                 {
                     ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
                     uart_read_bytes(UART_COMMUNICATION_PORT_NUM, uart_interface_ptr->read_buf.data(), event.size, portMAX_DELAY);
-                    ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
+                    // ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
+                    task_input->sml_ptr->readBuffer(uart_interface_ptr->read_buf.data(), event.size);
                     break;
                 }
                 // Event of HW FIFO overflow detected
@@ -143,3 +145,4 @@ void UARTInterface::uart_event_task(void* pvParameters) {
     // this removes the task from the RTOS queues and is usually not reached
     vTaskDelete(NULL);
 }
+

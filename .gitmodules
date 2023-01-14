@@ -1,0 +1,3 @@
+[submodule "components/sml-parser/vendor/sml_parser"]
+	path = components/sml-parser/vendor/sml_parser
+	url = https://github.com/olliiiver/sml_parser.git
