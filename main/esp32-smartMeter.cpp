@@ -43,7 +43,7 @@ extern "C" void app_main()
     auto sml_parser = std::make_unique<SMLParser>(mqtt_client.get());
     auto uart_interface = std::make_unique<UARTInterface>();
 
-    auto uart_task_input = std::make_unique<UARTEventTaskInput>(uart_interface.get(), sml_parser.get());
+    auto uart_task_input = std::make_unique<UARTEventTaskInput>(uart_interface.get(), &SMLParser::readBufferCallbackWrapper, sml_parser.get());
 
     // Create a task to handler UART event from ISR
     // The UART interface has to be allocated dynamically as the tasks cannot reference stack vars

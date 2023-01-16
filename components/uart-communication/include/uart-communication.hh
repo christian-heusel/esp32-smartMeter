@@ -2,7 +2,6 @@
 #define UART_COMMUNICATION_HH
 
 #include "driver/uart.h"
-#include "sml-parser.hh"
 
 #include <vector>
 
@@ -28,7 +27,10 @@ private:
 
 struct UARTEventTaskInput {
     UARTInterface* uart_ptr;
-    SMLParser* sml_ptr;
+
+    using data_callback_t = void(*)(void*, const unsigned char* input, size_t size);
+    data_callback_t data_callback;
+    void* data_callback_1;
 };
 
 #endif /* ifndef UART_COMMUNICATION_HH */

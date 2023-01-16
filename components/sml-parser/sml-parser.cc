@@ -17,6 +17,11 @@ void SMLParser::PowerT1() { smlOBISWh(T1Wh); }
 
 void SMLParser::PowerSum() { smlOBISWh(SumWh); }
 
+void SMLParser::readBufferCallbackWrapper(void* sml_parser, const unsigned char* input, size_t size) {
+    auto self = static_cast<SMLParser*>(sml_parser);
+    self->readBuffer(input, size);
+}
+
 void SMLParser::readBuffer(const unsigned char* input, size_t size) {
     for (int i = 0; i < size; ++i) {
         readByte(input[i]);

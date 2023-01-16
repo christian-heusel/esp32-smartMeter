@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <functional>
 #include <cstring>
 
 #include "esp_err.h"
@@ -82,7 +83,9 @@ void UARTInterface::uart_event_task(void* pvParameters) {
                     // ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
                     uart_read_bytes(UART_COMMUNICATION_PORT_NUM, uart_interface_ptr->read_buf.data(), event.size, portMAX_DELAY);
                     // ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
-                    task_input->sml_ptr->readBuffer(uart_interface_ptr->read_buf.data(), event.size);
+
+                    std::invoke(task_input->data_callback,
+                                task_input->data_callback_1, uart_interface_ptr->read_buf.data(), event.size);
                     break;
                 }
                 // Event of HW FIFO overflow detected

@@ -18,6 +18,8 @@ public:
     void printSMLValues();
     void sendSMLValues();
 
+    static void readBufferCallbackWrapper(void* sml_parser, const unsigned char* input, size_t size);
+
 private:
     MQTTClient* mqttClient;
     sml_states_t currentState;
