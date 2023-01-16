@@ -59,9 +59,18 @@ void UARTInterface::testEndlessLoop() {
     }
 }
 
+void UARTInterface::registerDataCallback(data_callback_t callback, void* callback_1) {
+    data_callbacks.push_back({callback, callback_1});
+}
+
+void UARTInterface::invokeDataCallbacks(const unsigned char* input, size_t size) {
+    for (auto&& [callback, obj] : data_callbacks) {
+        callback(obj, input, size);
+    }
+}
+
 void UARTInterface::uart_event_task(void* pvParameters) {
-    auto task_input = static_cast<UARTEventTaskInput*>(pvParameters);
-    UARTInterface* uart_interface_ptr = task_input->uart_ptr;
+    UARTInterface* uart_interface_ptr = static_cast<UARTInterface*>(pvParameters);
     uart_event_t event;
     size_t buffered_size;
 
@@ -84,8 +93,7 @@ void UARTInterface::uart_event_task(void* pvParameters) {
                     uart_read_bytes(UART_COMMUNICATION_PORT_NUM, uart_interface_ptr->read_buf.data(), event.size, portMAX_DELAY);
                     // ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
 
-                    std::invoke(task_input->data_callback,
-                                task_input->data_callback_1, uart_interface_ptr->read_buf.data(), event.size);
+                    uart_interface_ptr->invokeDataCallbacks(uart_interface_ptr->read_buf.data(), event.size);
                     break;
                 }
                 // Event of HW FIFO overflow detected

@@ -20,17 +20,14 @@ public:
 
     static void uart_event_task(void *pvParameters);
 
+    using data_callback_t = void(*)(void*, const unsigned char* input, size_t size);
+    void registerDataCallback(data_callback_t callback, void* callback_1);
+    void invokeDataCallbacks(const unsigned char* input, size_t size);
+
 private:
     QueueHandle_t uart_queue;
     std::vector<uint8_t> read_buf;
-};
-
-struct UARTEventTaskInput {
-    UARTInterface* uart_ptr;
-
-    using data_callback_t = void(*)(void*, const unsigned char* input, size_t size);
-    data_callback_t data_callback;
-    void* data_callback_1;
+    std::vector<std::pair<data_callback_t, void*>> data_callbacks;
 };
 
 #endif /* ifndef UART_COMMUNICATION_HH */
