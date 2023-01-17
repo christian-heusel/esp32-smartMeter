@@ -31,16 +31,25 @@ private:
     static void PowerT1();
     static void PowerSum();
 
+    static void PowerTotal();
+    static void PowerL1();
+    static void PowerL2();
+    static void PowerL3();
+
     typedef struct {
       const unsigned char OBIS[6];
       void (*Handler)();
     } OBISHandler;
 
     // clang-format off
-    OBISHandler OBISHandlers[4] = {
+    OBISHandler OBISHandlers[8] = {
         {{0x81, 0x81, 0xc7, 0x82, 0x03, 0xff}, &SMLParser::Manufacturer}, /* 129-129:199.130.3*255 */
         {{0x01, 0x00, 0x01, 0x08, 0x01, 0xff}, &SMLParser::PowerT1},      /*   1-  0:  1.  8.1*255 (T1) */
         {{0x01, 0x00, 0x01, 0x08, 0x00, 0xff}, &SMLParser::PowerSum},     /*   1-  0:  1.  8.0*255 (T1 + T2) */
+        {{0x01, 0x00, 0x10, 0x07, 0x00, 0xff}, &SMLParser::PowerTotal},
+        {{0x01, 0x00, 0x15, 0x07, 0x00, 0xff}, &SMLParser::PowerL1},
+        {{0x01, 0x00, 0x29, 0x07, 0x00, 0xff}, &SMLParser::PowerL2},
+        {{0x01, 0x00, 0x3D, 0x07, 0x00, 0xff}, &SMLParser::PowerL3},
         {{0}, 0}
     };
     // clang-format on

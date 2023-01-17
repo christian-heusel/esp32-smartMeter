@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 unsigned char manuf[5];
-double T1Wh = -2, SumWh = -2;
+double T1Wh = -2, SumWh = -2, TotalW = -2, L1W = -2.0 , L2W = -2.0, L3W = -2.0;
 
 SMLParser::SMLParser(MQTTClient* mqttClient)
 :
@@ -16,6 +16,11 @@ void SMLParser::Manufacturer() { smlOBISManufacturer(manuf, 5); }
 void SMLParser::PowerT1() { smlOBISWh(T1Wh); }
 
 void SMLParser::PowerSum() { smlOBISWh(SumWh); }
+
+void SMLParser::PowerTotal() { smlOBISW(TotalW); }
+void SMLParser::PowerL1() { smlOBISW(L1W); }
+void SMLParser::PowerL2() { smlOBISW(L2W); }
+void SMLParser::PowerL3() { smlOBISW(L3W); }
 
 void SMLParser::readBufferCallbackWrapper(void* sml_parser, const unsigned char* input, size_t size) {
     auto self = static_cast<SMLParser*>(sml_parser);
@@ -42,6 +47,19 @@ void SMLParser::printSMLValues()
     // dtostrf(SumWh, 10, 1, floatBuffer);
     sprintf(buffer, "Sum: %f", SumWh);
     ESP_LOGI(SML_PARSER_LOG_TAG, "Sum.: %s", buffer);
+
+    sprintf(buffer, "total: %f W", TotalW);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "total.: %s", buffer);
+/*
+    sprintf(buffer, "L1: %f W", L1W);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "L1: %s", buffer);
+
+    sprintf(buffer, "L2: %f W", L2W);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "L2.: %s", buffer);
+
+    sprintf(buffer, "L3: %f W", L3W);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "L3: %s", buffer);
+*/
 }
 
 void SMLParser::sendSMLValues()
@@ -51,6 +69,9 @@ void SMLParser::sendSMLValues()
 
     sprintf(buffer, "%f", SumWh);
     mqttClient->publish("sum", std::string_view(buffer, size));
+
+    sprintf(buffer, "%f", TotalW);
+    mqttClient->publish("total", std::string_view(buffer, size));
 }
 
 void SMLParser::readByte(unsigned char inputChar)
@@ -60,8 +81,12 @@ void SMLParser::readByte(unsigned char inputChar)
   if (currentState == SML_START) {
     /* reset local vars */
     manuf[0] = 0;
-    T1Wh = -3;
-    SumWh = -3;
+    T1Wh = -3.0;
+    SumWh = -3.0;
+    TotalW =-3.0;
+    L1W = -3.0;
+    L2W = -3.0;
+    L3W = -3.0;
   }
   if (currentState == SML_LISTEND) {
     /* check handlers on last received list */
