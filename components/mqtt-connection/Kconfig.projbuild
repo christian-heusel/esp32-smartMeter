@@ -2,7 +2,7 @@ menu "MQTT Configuration"
 
     config BROKER_URL
         string "Broker URL"
-        default "mqtt://testuser:password@scotty-the-fourth.fritz.box:1883"
+        default "mqtt://esp32_smartMeter:password@scotty-the-fourth.fritz.box:1883"
         help
             URL of the broker to connect to
 

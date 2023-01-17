@@ -23,6 +23,7 @@
 
 #include "wifi.h"
 #include "uart-communication.hh"
+#include "sml-parser.hh"
 #include "mqtt.hh"
 
 extern "C" void app_main()
@@ -38,15 +39,19 @@ extern "C" void app_main()
     ESP_LOGI(WIFI_LOG_TAG, "ESP_WIFI_MODE_STA");
     wifi_init_station_mode();
 
-    auto mqtt_client = MQTTClient{};
-    mqtt_client.publish("/topic/some_test_topic", "abcde");
-
+    auto mqtt_client = std::make_unique<MQTTClient>("esp32/smartMeter/");
+    auto sml_parser = std::make_unique<SMLParser>(mqtt_client.get());
     auto uart_interface = std::make_unique<UARTInterface>();
+
+    uart_interface->registerDataCallback(&SMLParser::readBufferCallbackWrapper, sml_parser.get());
 
     // Create a task to handler UART event from ISR
     // The UART interface has to be allocated dynamically as the tasks cannot reference stack vars
     // see https://www.freertos.org/a00125.html at "pvParameters"
     xTaskCreate(UARTInterface::uart_event_task, "uart_event_task", 2048, uart_interface.get(), 12, NULL);
 
-    uart_interface->testEndlessLoop();
+    for (;;) {
+        ESP_LOGI("MAIN", "tick");
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }

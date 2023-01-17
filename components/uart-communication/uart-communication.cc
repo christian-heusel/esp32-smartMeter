@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <functional>
 #include <cstring>
 
 #include "esp_err.h"
@@ -58,6 +59,16 @@ void UARTInterface::testEndlessLoop() {
     }
 }
 
+void UARTInterface::registerDataCallback(data_callback_t callback, void* callback_1) {
+    data_callbacks.push_back({callback, callback_1});
+}
+
+void UARTInterface::invokeDataCallbacks(const unsigned char* input, size_t size) {
+    for (auto&& [callback, obj] : data_callbacks) {
+        callback(obj, input, size);
+    }
+}
+
 void UARTInterface::uart_event_task(void* pvParameters) {
     UARTInterface* uart_interface_ptr = static_cast<UARTInterface*>(pvParameters);
     uart_event_t event;
@@ -70,7 +81,7 @@ void UARTInterface::uart_event_task(void* pvParameters) {
         // Waiting for UART event.
         if(xQueueReceive(uart_interface_ptr->uart_queue, (void * )&event, (TickType_t)portMAX_DELAY)) {
             bzero(uart_interface_ptr->read_buf.data(), READ_BUF_SIZE);
-            ESP_LOGI(UART_COMMUNICATION_TAG, "uart[%d] event:", UART_COMMUNICATION_PORT_NUM);
+            // ESP_LOGI(UART_COMMUNICATION_TAG, "uart[%d] event:", UART_COMMUNICATION_PORT_NUM);
             switch(event.type) {
                 // Event of UART receving data
                 /* We'd better handler data event fast, there would be much more data events than
@@ -78,9 +89,11 @@ void UARTInterface::uart_event_task(void* pvParameters) {
                    be full. */
                 case UART_DATA:
                 {
-                    ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
+                    // ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
                     uart_read_bytes(UART_COMMUNICATION_PORT_NUM, uart_interface_ptr->read_buf.data(), event.size, portMAX_DELAY);
-                    ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
+                    // ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
+
+                    uart_interface_ptr->invokeDataCallbacks(uart_interface_ptr->read_buf.data(), event.size);
                     break;
                 }
                 // Event of HW FIFO overflow detected
@@ -143,3 +156,4 @@ void UARTInterface::uart_event_task(void* pvParameters) {
     // this removes the task from the RTOS queues and is usually not reached
     vTaskDelete(NULL);
 }
+
