@@ -89,7 +89,7 @@ void UARTInterface::uart_event_task(void* pvParameters) {
                    be full. */
                 case UART_DATA:
                 {
-                    // ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
+                    ESP_LOGI(UART_COMMUNICATION_TAG, "[UART DATA]: %d", event.size);
                     uart_read_bytes(UART_COMMUNICATION_PORT_NUM, uart_interface_ptr->read_buf.data(), event.size, portMAX_DELAY);
                     // ESP_LOGI(UART_COMMUNICATION_TAG, "[DATA EVT]: %s", (const char*) uart_interface_ptr->read_buf.data());
 

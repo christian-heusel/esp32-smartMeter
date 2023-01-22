@@ -37,41 +37,37 @@ void SMLParser::printSMLValues()
 {
     sprintf(buffer, "Msg..: %lu", counter);
     ESP_LOGI(SML_PARSER_LOG_TAG, "Message: %s", buffer);
-    sprintf(buffer, "Manuf: %s", manuf);
+    sprintf(buffer, "%s", manuf);
     ESP_LOGI(SML_PARSER_LOG_TAG, "Manufacturer: %s", buffer);
 
     // dtostrf(T1Wh, 10, 1, floatBuffer);
-    sprintf(buffer, "T1.: %f", T1Wh);
+    sprintf(buffer, "%f Wh", T1Wh);
     ESP_LOGI(SML_PARSER_LOG_TAG, "T1.: %s", buffer);
 
     // dtostrf(SumWh, 10, 1, floatBuffer);
-    sprintf(buffer, "Sum: %f", SumWh);
+    sprintf(buffer, "%f Wh", SumWh);
     ESP_LOGI(SML_PARSER_LOG_TAG, "Sum.: %s", buffer);
 
-    sprintf(buffer, "total: %f W", TotalW);
+    sprintf(buffer, "%f W", TotalW);
     ESP_LOGI(SML_PARSER_LOG_TAG, "total.: %s", buffer);
-/*
-    sprintf(buffer, "L1: %f W", L1W);
-    ESP_LOGI(SML_PARSER_LOG_TAG, "L1: %s", buffer);
-
-    sprintf(buffer, "L2: %f W", L2W);
-    ESP_LOGI(SML_PARSER_LOG_TAG, "L2.: %s", buffer);
-
-    sprintf(buffer, "L3: %f W", L3W);
-    ESP_LOGI(SML_PARSER_LOG_TAG, "L3: %s", buffer);
-*/
 }
 
 void SMLParser::sendSMLValues()
 {
     auto size = sprintf(buffer, "%f", T1Wh);
-    mqttClient->publish("t1", std::string_view(buffer, size));
+    ESP_LOGI(SML_PARSER_LOG_TAG, "%s,%d", buffer, size);
+    auto str = std::string_view(buffer, size);
+    mqttClient->publish("t1", str);
 
-    sprintf(buffer, "%f", SumWh);
-    mqttClient->publish("sum", std::string_view(buffer, size));
+    size = sprintf(buffer, "%f", SumWh);
+    str = std::string_view(buffer, size);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "%s,%d", buffer, size);
+    mqttClient->publish("sum", str);
 
-    sprintf(buffer, "%f", TotalW);
-    mqttClient->publish("total", std::string_view(buffer, size));
+    size = sprintf(buffer, "%f", TotalW);
+    str = std::string_view(buffer, size);
+    ESP_LOGI(SML_PARSER_LOG_TAG, "%s,%d", buffer, size);
+    mqttClient->publish("total", str);
 }
 
 void SMLParser::readByte(unsigned char inputChar)

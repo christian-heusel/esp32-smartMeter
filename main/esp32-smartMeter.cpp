@@ -48,7 +48,7 @@ extern "C" void app_main()
     // Create a task to handler UART event from ISR
     // The UART interface has to be allocated dynamically as the tasks cannot reference stack vars
     // see https://www.freertos.org/a00125.html at "pvParameters"
-    xTaskCreate(UARTInterface::uart_event_task, "uart_event_task", 2048, uart_interface.get(), 12, NULL);
+    xTaskCreate(UARTInterface::uart_event_task, "uart_event_task", 4096, uart_interface.get(), 12, NULL);
 
     for (;;) {
         ESP_LOGI("MAIN", "tick");
