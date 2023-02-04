@@ -20,6 +20,7 @@
 #include "nvs_flash.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 
 #include "wifi.h"
 #include "uart-communication.hh"
@@ -52,6 +53,12 @@ extern "C" void app_main()
 
     for (;;) {
         ESP_LOGI("MAIN", "tick");
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        char buffer[50];
+	int64_t uptime_seconds = esp_timer_get_time() / 1E6;
+        auto size = sprintf(buffer, "%lld", uptime_seconds);
+    	auto str = std::string_view(buffer, size);
+        ESP_LOGI("MAIN", "uptime: %s,%d", buffer, size);
+    	mqtt_client->publish("uptime", str);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
     }
 }
