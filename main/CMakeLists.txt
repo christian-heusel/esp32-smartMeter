@@ -20,4 +20,5 @@ idf_component_register(SRCS "esp32-smartMeter.cpp"
                        REQUIRES wifi-connection
                                 mqtt-connection
                                 uart-communication
-                                sml-parser)
+                                sml-parser
+                                esp_timer)
