@@ -12,17 +12,24 @@ This project reads out the meter values of an [ISKRA MT681](https://wiki.volksza
    $ cd esp32-smartMeter
    ```
 
-3. Configure the projects
+3. Configure the project
    ```
    $ idf.py menuconfig
    ```
-   And adapt the MQTT & Wifi Configuration
+   And especially insert sensible values into the MQTT & Wifi Configuration
 
 4. Build it & flash it
    ```
    $ idf.py build
    $ idf.py flash
    ```
+   
+## Visualization
+
+Import the grafana dashboard in [contrib/grafana-dashboard.json](https://github.com/christian-heusel/esp32-smartMeter/blob/main/contrib/grafana-dashboard.json)
+
+![Screenshots2023-03-07_16:54:15](https://user-images.githubusercontent.com/26827864/223476813-9005b283-6fcb-41ae-a11f-d9037b1899f3.png)
+
 
 ## License & Acknowledgements
 
