@@ -28,7 +28,7 @@ This project reads out the meter values of an [ISKRA MT681](https://wiki.volksza
 
 Import the grafana dashboard in [contrib/grafana-dashboard.json](https://github.com/christian-heusel/esp32-smartMeter/blob/main/contrib/grafana-dashboard.json)
 
-![Screenshots2023-03-07_16:54:15](https://user-images.githubusercontent.com/26827864/223476813-9005b283-6fcb-41ae-a11f-d9037b1899f3.png)
+![image](https://user-images.githubusercontent.com/26827864/224534926-38ba97d7-14db-4c0a-b674-8eaadf1df6d5.png)
 
 
 ## License & Acknowledgements
