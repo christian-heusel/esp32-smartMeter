@@ -12,13 +12,18 @@ This project reads out the meter values of an [ISKRA MT681](https://wiki.volksza
    $ cd esp32-smartMeter
    ```
 
-3. Configure the project
+3. activate esp-idf in current terminal session
+   ```
+   . $HOME/esp/v5.2.1/esp-idf/export.sh
+   ```
+
+4. Configure the project
    ```
    $ idf.py menuconfig
    ```
-   And especially insert sensible values into the MQTT & Wifi Configuration
+   And especially insert sensible values into the MQTT & Wi-Fi Configuration
 
-4. Build it & flash it
+5. Build it & flash it
    ```
    $ idf.py build
    $ idf.py flash
